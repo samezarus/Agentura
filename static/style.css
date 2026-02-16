@@ -426,7 +426,7 @@ body {
 
 /* Метаданные сообщения (время, модель) */
 .message-meta {
-    font-size: 11px;
+    font-size: 16px;
     color: var(--text-muted);
     margin-top: 4px;
     padding: 0 4px;
