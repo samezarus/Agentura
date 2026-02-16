@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent Chat</title>
+    <!-- Подключаем стили -->
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Подключаем marked.js для Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <!-- Боковая панель: список чатов -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button class="btn-new-chat" onclick="createNewChat()">+ Создать чат</button>
+            <div class="header-buttons">
+                <button class="theme-toggle" onclick="toggleTheme()" title="Переключить тему">
+                    <span id="themeIcon">🌙</span>
+                </button>
+                <button class="sidebar-toggle" onclick="toggleSidebar()" title="Свернуть панель">
+                    <span id="sidebarToggleIcon">◀</span>
+                </button>
+            </div>
+        </div>
+        <div class="sessions-list" id="sessionsList">
+            <!-- Список сессий загружается через JS -->
+        </div>
+        <div class="sidebar-footer">
+            <button class="btn-clear-all" onclick="clearAllSessions()">Очистить все сессии</button>
+        </div>
+    </div>
+
+    <!-- Кнопка для разворачивания свернутой панели -->
+    <button class="sidebar-expand-btn" id="sidebarExpandBtn" onclick="toggleSidebar()" title="Развернуть панель">
+        ▶
+    </button>
+
+    <!-- Основная область чата -->
+    <div class="chat-area">
+        <div class="chat-header" id="chatHeader">Выберите чат</div>
+        <div class="messages-container" id="messagesContainer">
+            <div class="empty-state">
+                <div>Выберите чат из списка или создайте новый</div>
+            </div>
+        </div>
+        <div class="input-area" id="inputArea" style="display: none;">
+            <form class="input-form" onsubmit="sendMessage(event)">
+                <input type="text" class="message-input" id="messageInput" placeholder="Введите сообщение..." autocomplete="off">
+                <button type="submit" class="btn-send" id="sendButton">Отправить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Подключаем JavaScript -->
+    <script src="/static/app.js"></script>
+</body>
+</html>

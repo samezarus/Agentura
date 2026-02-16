@@ -1,0 +1,735 @@
+/**
+ * AI Agent Chat - Stylesheet
+ *
+ * Содержит все стили для веб-чата:
+ * - CSS переменные для тем (тёмная/светлая)
+ * - Стили для боковой панели (список чатов)
+ * - Стили для области чата (сообщения, ввод)
+ * - Анимации и переходы
+ * - Скроллбар
+ */
+
+/* ==================== CSS ПЕРЕМЕННЫЕ ==================== */
+
+:root {
+    /* Тёмная тема (по умолчанию) */
+    --bg-primary: #1a1a1a;
+    /* Основной фон страницы */
+    --bg-secondary: #2d2d2d;
+    /* Фон панелей */
+    --bg-tertiary: #737373;
+    /* Фон элементов */
+    --bg-hover: #4d4d4d;
+    /* Фон при наведении */
+    --text-primary: #e0e0e0;
+    /* Основной текст */
+    --text-secondary: #141414;
+    /* Второстепенный текст */
+    --text-muted: #808080;
+    /* Приглушённый текст */
+    --border-color: #3d3d3d;
+    /* Цвет границ */
+    --accent: #c9c9c9;
+    /* Акцентный цвет (зелёный) */
+    --accent-hover: #c9c9c9;
+    /* Акцент при наведении */
+    --danger: #f44336;
+    /* Опасный цвет (красный) */
+    --danger-hover: #da190b;
+    /* Опасный при наведении */
+    --user-msg-bg: #4CAF50;
+    /* Фон сообщения пользователя */
+    --user-msg-text: #ffffff;
+    /* Текст сообщения пользователя */
+    --ai-msg-bg: #3d3d3d;
+    /* Фон сообщения AI */
+    --ai-msg-text: #e0e0e0;
+    /* Текст сообщения AI */
+}
+
+[data-theme="light"] {
+    /* Светлая тема */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f5f5f5;
+    --bg-tertiary: #e8e8e8;
+    --bg-hover: #d0d0d0;
+    --text-primary: #1a1a1a;
+    --text-secondary: #4a4a4a;
+    --text-muted: #808080;
+    --border-color: #e0e0e0;
+    --accent: #c9c9c9;
+    --accent-hover: #c9c9c9;
+    --danger: #f44336;
+    --danger-hover: #da190b;
+    --user-msg-bg: #4CAF50;
+    --user-msg-text: #ffffff;
+    --ai-msg-bg: #f0f0f0;
+    --ai-msg-text: #1a1a1a;
+}
+
+/* ==================== БАЗОВЫЕ СТИЛИ ==================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background 0.3s, color 0.3s;
+    /* Плавный переход темы */
+}
+
+/* ==================== БОКОВАЯ ПАНЕЛЬ ==================== */
+
+.sidebar {
+    width: 280px;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.sidebar.collapsed {
+    width: 0;
+    min-width: 0;
+    border-right: none;
+}
+
+.sidebar.collapsed .sidebar-header,
+.sidebar.collapsed .sessions-list,
+.sidebar.collapsed .sidebar-footer {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Кнопка разворачивания (показывается когда панель свернута) */
+.sidebar-expand-btn {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 48px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-left: none;
+    border-radius: 0 6px 6px 0;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-size: 12px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+.sidebar-expand-btn.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.sidebar-expand-btn:hover {
+    background: var(--bg-hover);
+}
+
+/* Кнопка сворачивания в заголовке */
+.sidebar-toggle {
+    width: 40px;
+    height: 38px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: var(--text-primary);
+    transition: background 0.2s;
+}
+
+.sidebar-toggle:hover {
+    background: var(--bg-hover);
+}
+
+/* Заголовок боковой панели с кнопками */
+.sidebar-header {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    gap: 10px;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+/* Кнопка "Создать чат" */
+.btn-new-chat {
+    flex: 1;
+    padding: 10px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.btn-new-chat:hover {
+    background: var(--accent-hover);
+}
+
+/* Кнопка переключения темы */
+.theme-toggle {
+    width: 40px;
+    height: 38px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: background 0.2s;
+}
+
+.theme-toggle:hover {
+    background: var(--bg-hover);
+}
+
+/* Список чатов */
+.sessions-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+/* Элемент списка чатов */
+.session-item {
+    padding: 12px;
+    margin-bottom: 5px;
+    background: var(--bg-tertiary);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.session-item:hover {
+    background: var(--bg-hover);
+}
+
+.session-item.active {
+    background: var(--accent);
+    color: white;
+}
+
+.session-title {
+    font-size: 16px;
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    margin-right: 8px;
+}
+
+/* Кнопка меню (три точки) */
+.session-menu-btn {
+    width: 28px;
+    height: 28px;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--text-muted);
+    transition: background 0.2s, color 0.2s;
+    flex-shrink: 0;
+}
+
+.session-menu-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.session-item.active .session-menu-btn {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.session-item.active .session-menu-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+/* Выпадающее меню */
+.session-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    min-width: 120px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+    display: none;
+    overflow: hidden;
+}
+
+.session-menu.show {
+    display: block;
+}
+
+/* Пункт меню */
+.session-menu-item {
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-primary);
+    transition: background 0.2s;
+}
+
+.session-menu-item:hover {
+    background: var(--bg-hover);
+}
+
+.session-menu-item.danger {
+    color: var(--danger);
+}
+
+.session-menu-item.danger:hover {
+    background: var(--danger);
+    color: white;
+}
+
+/* Нижний колонтитул боковой панели */
+.sidebar-footer {
+    padding: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Кнопка "Очистить все сессии" */
+.btn-clear-all {
+    width: 100%;
+    padding: 10px;
+    background: var(--danger);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.2s;
+}
+
+.btn-clear-all:hover {
+    background: var(--danger-hover);
+}
+
+/* ==================== ОБЛАСТЬ ЧАТА ==================== */
+
+.chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+}
+
+/* Заголовок чата (ID сессии) */
+.chat-header {
+    padding: 15px 20px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 500;
+    transition: background 0.3s, border-color 0.3s;
+}
+
+/* ==================== СООБЩЕНИЯ ==================== */
+
+.message {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 12px;
+}
+
+/* Сообщение пользователя (справа) */
+.message.user {
+    justify-content: flex-end;
+}
+
+/* Аватарка */
+.message-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.message.user .message-avatar {
+    background: var(--user-msg-bg);
+    color: var(--user-msg-text);
+}
+
+.message.assistant .message-avatar {
+    background: #2196F3;
+    color: white;
+}
+
+/* Контент сообщения */
+.message-content {
+    max-width: 70%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    line-height: 1.5;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+}
+
+/* Ограничение для контейнера сообщений */
+.messages-container {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 20px;
+}
+
+/* Код внутри сообщений с горизонтальной прокруткой */
+.message-content pre {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 12px;
+    border-radius: 8px;
+    overflow-x: auto;
+    max-width: 100%;
+    margin: 8px 0;
+}
+
+.message-content code {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    word-break: break-all;
+}
+
+/* Таблицы с прокруткой */
+.message-content table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+/* Ссылки */
+.message-content a {
+    word-break: break-all;
+}
+
+/* Кнопка меню сообщения (три точки) */
+.message-menu-btn {
+    width: 28px;
+    height: 28px;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--text-muted);
+    transition: background 0.2s, color 0.2s;
+    flex-shrink: 0;
+    opacity: 0;
+}
+
+.message:hover .message-menu-btn {
+    opacity: 1;
+}
+
+.message-menu-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+/* Выпадающее меню сообщения */
+.message-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    min-width: 120px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+    display: none;
+    overflow: hidden;
+}
+
+.message-menu.show {
+    display: block;
+}
+
+/* Пункт меню сообщения */
+.message-menu-item {
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-primary);
+    transition: background 0.2s;
+}
+
+.message-menu-item:hover {
+    background: var(--bg-hover);
+}
+
+.message-menu-item.danger {
+    color: var(--danger);
+}
+
+.message-menu-item.danger:hover {
+    background: var(--danger);
+    color: white;
+}
+
+.message.user .message-content {
+    background: var(--user-msg-bg);
+    color: var(--user-msg-text);
+}
+
+.message.assistant .message-content {
+    background: var(--ai-msg-bg);
+    color: var(--ai-msg-text);
+}
+
+/* ==================== ОБЛАСТЬ ВВОДА ==================== */
+
+.input-area {
+    padding: 20px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    transition: background 0.3s, border-color 0.3s;
+}
+
+.input-form {
+    display: flex;
+    gap: 10px;
+}
+
+/* Поле ввода сообщения */
+.message-input {
+    flex: 1;
+    padding: 12px 16px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 18px;
+    resize: none;
+    outline: none;
+    transition: background 0.3s, border-color 0.3s, color 0.3s;
+}
+
+.message-input:focus {
+    border-color: var(--accent);
+}
+
+/* Кнопка "Отправить" */
+.btn-send {
+    padding: 12px 24px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.btn-send:hover {
+    background: var(--accent-hover);
+}
+
+.btn-send:disabled {
+    background: var(--bg-tertiary);
+    cursor: not-allowed;
+}
+
+/* ==================== ПУСТОЕ СОСТОЯНИЕ ==================== */
+
+.empty-state {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 16px;
+}
+
+/* ==================== СКРОЛЛБАР ==================== */
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bg-hover);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+/* ==================== АНИМАЦИИ ==================== */
+
+/* Индикатор загрузки (вращающийся круг) */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--bg-tertiary);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Информация о выполненной tool */
+.tool-info {
+    font-size: 16px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    padding: 8px;
+    background: var(--bg-secondary);
+    border-radius: 6px;
+}
+
+/* ==================== MARKDOWN СТИЛИ ==================== */
+
+/* Стили для Markdown разметки в сообщениях */
+.message-content h1,
+.message-content h2,
+.message-content h3,
+.message-content h4,
+.message-content h5,
+.message-content h6 {
+    margin-top: 16px;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.message-content h1 {
+    font-size: 1.5em;
+}
+
+.message-content h2 {
+    font-size: 1.3em;
+}
+
+.message-content h3 {
+    font-size: 1.2em;
+}
+
+.message-content p {
+    margin-bottom: 12px;
+    line-height: 1.6;
+}
+
+.message-content ul,
+.message-content ol {
+    margin: 12px 0;
+    padding-left: 24px;
+}
+
+.message-content li {
+    margin-bottom: 6px;
+}
+
+.message-content pre code {
+    background: transparent;
+    padding: 0;
+}
+
+.message-content blockquote {
+    border-left: 3px solid var(--border-color);
+    padding-left: 12px;
+    margin: 8px 0;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.message-content a:hover {
+    text-decoration: underline;
+}
+
+.message-content th,
+.message-content td {
+    border: 1px solid var(--border-color);
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.message-content th {
+    background: var(--bg-tertiary);
+    font-weight: 600;
+}
+
+.message-content img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 8px 0;
+}
+
+.message-content hr {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 16px 0;
+}
