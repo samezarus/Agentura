@@ -37,13 +37,13 @@ python main.py
 Или через uvicorn:
 ```bash
 source .venv/bin/activate
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
+uvicorn main:app --reload --host 0.0.0.0 --port 88888
 ```
 
 ### Front
 
 ``` url
-http://localhost:8000
+http://localhost:8888
 ```
 
 ## Архитектура Tools

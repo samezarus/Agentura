@@ -222,6 +222,44 @@ function loadChat(sessionId) {
 // ==================== ОТОБРАЖЕНИЕ СООБЩЕНИЙ ====================
 
 /**
+ * Форматирует timestamp в читаемое время
+ * @param {string} timestamp - ISO timestamp
+ * @returns {string} - отформатированное время (HH:MM:SS)
+ */
+function formatTime(timestamp) {
+    if (!timestamp) return '';
+    try {
+        const date = new Date(timestamp);
+        return date.toLocaleTimeString('ru-RU', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+    } catch (e) {
+        return '';
+    }
+}
+
+/**
+ * Вычисляет время между двумя timestamp
+ * @param {string} startTime - начальный ISO timestamp
+ * @param {string} endTime - конечный ISO timestamp
+ * @returns {string} - отформатированное время (X.Xs)
+ */
+function calculateResponseTime(startTime, endTime) {
+    if (!startTime || !endTime) return '';
+    try {
+        const start = new Date(startTime).getTime();
+        const end = new Date(endTime).getTime();
+        const diff = (end - start) / 1000; // в секундах
+        if (diff < 1) return `${(diff * 1000).toFixed(0)}ms`;
+        return `${diff.toFixed(1)}s`;
+    } catch (e) {
+        return '';
+    }
+}
+
+/**
  * Отображает список сообщений в чате
  * @param {Array} messages - массив сообщений с сервера
  */
@@ -243,12 +281,44 @@ function displayMessages(messages) {
         avatar.className = 'message-avatar';
         avatar.textContent = msg.from_ === 'user' ? 'Вы' : 'AI';
 
+        const contentWrapper = document.createElement('div');
+        contentWrapper.className = 'message-content-wrapper';
+
         const content = document.createElement('div');
         content.className = 'message-content';
         content.innerHTML = formatMessage(msg.message);
 
+        contentWrapper.appendChild(content);
+
+        // Добавляем метаданные (время, модель)
+        if (msg.timestamp || msg.model) {
+            const meta = document.createElement('div');
+            meta.className = 'message-meta';
+
+            const timeStr = formatTime(msg.timestamp);
+            const modelStr = msg.model || '';
+            
+            // Для сообщений ассистента показываем время отклика
+            let responseTimeStr = '';
+            if (msg.from_ === 'assistant' && msg.timestamp && index > 0) {
+                const prevMsg = messages[index - 1];
+                if (prevMsg && prevMsg.timestamp) {
+                    responseTimeStr = calculateResponseTime(prevMsg.timestamp, msg.timestamp);
+                }
+            }
+
+            // Собираем строку метаданных
+            const metaParts = [];
+            if (timeStr) metaParts.push(timeStr);
+            if (modelStr) metaParts.push(modelStr);
+            if (responseTimeStr) metaParts.push(`⏱ ${responseTimeStr}`);
+
+            meta.textContent = metaParts.join(' • ');
+            contentWrapper.appendChild(meta);
+        }
+
         div.appendChild(avatar);
-        div.appendChild(content);
+        div.appendChild(contentWrapper);
 
         // Добавляем меню только для сообщений пользователя
         if (msg.from_ === 'user') {

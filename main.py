@@ -9,6 +9,8 @@ from openai import OpenAI
 import subprocess
 import json
 import os
+import time
+from datetime import datetime
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -315,6 +317,8 @@ tool_manager.register(WebSearchTool())
 class HistoryItem(BaseModel):
     from_: str = Field(alias="from")
     message: str
+    timestamp: Optional[str] = None
+    model: Optional[str] = None
 
     model_config = {"populate_by_name": True}
 
@@ -328,6 +332,7 @@ class ChatResponse(BaseModel):
     response: str
     tool_used: Optional[str] = None
     tool_result: Optional[str] = None
+    response_time: Optional[float] = None  # Время генерации в секундах
 
 
 class ToolDetectionRequest(BaseModel):
@@ -477,6 +482,9 @@ async def chat(request: ChatRequest):
     # Загружаем историю сессии
     history = load_session(request.session_id)
 
+    # Timestamp для сообщения пользователя
+    user_timestamp = datetime.now().isoformat()
+
     # Проверяем - нужно ли использовать tool
     use_tool, tool_name, params = await should_use_tool(request.prompt)
 
@@ -486,7 +494,7 @@ async def chat(request: ChatRequest):
         # Выполняем tool
         tool_result = await tool_manager.call(tool_name, **(params or {}))
 
-    # Генерируем финальный ответ
+    # Генерируем финальный ответ и замеряем время
     tool_context = None
     if use_tool and tool_result:
         # Красивое форматирование для разных типов tools
@@ -498,17 +506,34 @@ async def chat(request: ChatRequest):
         icon = tool_icons.get(tool_name, "🔧")
         tool_context = f"{icon} **{tool_name}**\n\n```\n{tool_result}\n```"
 
+    # Замеряем время генерации ответа
+    start_time = time.time()
     response = generate_response(request.prompt, history, tool_context)
+    response_time = time.time() - start_time
 
-    # Сохраняем историю
-    history.append(HistoryItem(from_="user", message=request.prompt))
-    history.append(HistoryItem(from_="assistant", message=response))
+    # Timestamp для ответа ассистента
+    assistant_timestamp = datetime.now().isoformat()
+
+    # Сохраняем историю с timestamp и model
+    history.append(HistoryItem(
+        from_="user",
+        message=request.prompt,
+        timestamp=user_timestamp,
+        model=None
+    ))
+    history.append(HistoryItem(
+        from_="assistant",
+        message=response,
+        timestamp=assistant_timestamp,
+        model=model_provider.model_name
+    ))
     save_session(request.session_id, history)
 
     return ChatResponse(
         response=response,
         tool_used=tool_name if use_tool else None,
-        tool_result=tool_result
+        tool_result=tool_result,
+        response_time=response_time
     )
 
 
