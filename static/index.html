@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Agent Chat</title>
+    <title>Agentura</title>
     <!-- Подключаем стили -->
     <link rel="stylesheet" href="/static/style.css">
     <!-- Подключаем marked.js для Markdown -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
+
 <body>
     <!-- Боковая панель: список чатов -->
     <div class="sidebar" id="sidebar">
@@ -46,7 +48,8 @@
         </div>
         <div class="input-area" id="inputArea" style="display: none;">
             <form class="input-form" onsubmit="sendMessage(event)">
-                <input type="text" class="message-input" id="messageInput" placeholder="Введите сообщение..." autocomplete="off">
+                <input type="text" class="message-input" id="messageInput" placeholder="Введите сообщение..."
+                    autocomplete="off">
                 <button type="submit" class="btn-send" id="sendButton">Отправить</button>
             </form>
         </div>
@@ -55,4 +58,5 @@
     <!-- Подключаем JavaScript -->
     <script src="/static/app.js"></script>
 </body>
+
 </html>
