@@ -76,10 +76,11 @@ class OllamaProvider(ModelProvider):
 class OpenAICompatibleProvider(ModelProvider):
     """Провайдер для OpenAI-совместимых API (OpenAI, Azure, vLLM, LM Studio и т.д.)"""
 
-    def __init__(self, api_key: str, model: str, base_url: str):
+    def __init__(self, api_key: str, model: str, base_url: str, headers: dict = None):
         self._client = OpenAI(
             api_key=api_key,
-            base_url=base_url
+            base_url=base_url,
+            default_headers=headers
         )
         self._model = model
 
