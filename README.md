@@ -1,6 +1,6 @@
 # Personal Rest/UI AI Agent
 
-REST/UI персональный AI-агент на Python + FastAPI с использованием Ollama и системой Tools.
+REST/UI персональный AI-агент на Python + FastAPI и системой Tools.
 
 ## Возможности
 
