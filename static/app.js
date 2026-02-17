@@ -230,11 +230,20 @@ function formatTime(timestamp) {
     if (!timestamp) return '';
     try {
         const date = new Date(timestamp);
-        return date.toLocaleTimeString('ru-RU', {
+
+        const dateStr = date.toLocaleDateString('ru-RU', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+
+        const timeStr = date.toLocaleTimeString('ru-RU', {
             hour: '2-digit',
             minute: '2-digit',
             second: '2-digit'
         });
+
+        return `${timeStr} - ${dateStr}`;
     } catch (e) {
         return '';
     }
@@ -297,7 +306,7 @@ function displayMessages(messages) {
 
             const timeStr = formatTime(msg.timestamp);
             const modelStr = msg.model || '';
-            
+
             // Для сообщений ассистента показываем время отклика
             let responseTimeStr = '';
             if (msg.from_ === 'assistant' && msg.timestamp && index > 0) {
@@ -313,7 +322,7 @@ function displayMessages(messages) {
             if (modelStr) metaParts.push(modelStr);
             if (responseTimeStr) metaParts.push(`⏱ ${responseTimeStr}`);
 
-            meta.textContent = metaParts.join(' • ');
+            meta.textContent = metaParts.join(' | ');
             contentWrapper.appendChild(meta);
         }
 
