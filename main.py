@@ -25,6 +25,7 @@ if static_dir.exists():
 
 # Настройки
 MODEL_PROVIDER = os.getenv("MODEL_PROVIDER", "ollama").lower()
+OLLAMA_API_KEY = os.getenv("OLLAMA_API_KEY", "")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2")
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
@@ -56,8 +57,14 @@ class ModelProvider(ABC):
 class OllamaProvider(ModelProvider):
     """Провайдер для Ollama"""
 
-    def __init__(self, base_url: str, model: str):
-        self._client = ollama.Client(host=base_url)
+    def __init__(self, api_key: str, base_url: str, model: str):
+        if api_key:
+            self._client = ollama.Client(
+                host=base_url, 
+                headers={"Authorization": f"Bearer {api_key}"}
+            )
+        else: 
+            self._client = ollama.Client(host=base_url)
         self._model = model
 
     @property
@@ -109,8 +116,9 @@ def get_model_provider() -> ModelProvider:
         )
     else:  # ollama по умолчанию
         return OllamaProvider(
+            api_key=OLLAMA_API_KEY,
             base_url=OLLAMA_BASE_URL,
-            model=OLLAMA_MODEL
+            model=OLLAMA_MODEL,
         )
 
 
