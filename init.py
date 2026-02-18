@@ -1,6 +1,8 @@
 from pathlib import Path
 import json
 
+from conf import *
+
 
 def _init_providers():
     """ Инициализация дефолтных AI-поставщиков """
@@ -36,20 +38,16 @@ def _init_providers():
     return _providers
 
 
-def _init(_data_folder: str = ".agentura"):
-    
-    #
-    try:
-        #
-        _prject_dir = Path.home() / _data_folder
-        _prject_dir.mkdir(parents=True, exist_ok=True)
-        
-        #
-        with open(_prject_dir / "providers.json", "w", encoding="utf-8") as file:
+def _init():
+    """ Инициализация проекта """
+
+    try:        
+        # Инициализация дефолтных AI-поставщиков
+        with open(DATA_FOLDER / "providers.json", "w", encoding="utf-8") as file:
             json.dump(_init_providers(), file, indent=4, ensure_ascii=False)
 
     except Exception as e: 
-        print(e)
+        print("Ошибка инициализации (agentura.py init)", e)
         raise
 
 

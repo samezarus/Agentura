@@ -16,6 +16,8 @@ import ollama
 from openai import OpenAI
 from dotenv import load_dotenv
 
+from conf import *
+
 
 load_dotenv()
 
@@ -27,8 +29,8 @@ if static_dir.exists():
     app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
 # Настройки
-DATA_FOLDER = os.getenv("DATA_FOLDER", "~/.agentura")
-API_PORT = os.getenv("API_PORT", 8888)
+# DATA_FOLDER = os.getenv("DATA_FOLDER", "~/.agentura")
+# API_PORT = os.getenv("API_PORT", 8888)
 
 MODEL_PROVIDER = os.getenv("MODEL_PROVIDER", "ollama").lower()
 OLLAMA_API_KEY = os.getenv("OLLAMA_API_KEY", "")
