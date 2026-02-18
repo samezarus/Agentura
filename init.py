@@ -12,7 +12,6 @@ def _init_providers():
     }
     
     _providers["items"]["ollama"] = {
-        "active": True,
         "engine": "ollama",
         "base_url": "http://localhost:11434",
         "model": "gpt-oss:120b",
@@ -20,7 +19,6 @@ def _init_providers():
     }
 
     _providers["items"]["ollama_nginx"] = {
-        "active": False,
         "engine": "ollama",
         "base_url": "https://my-ollama.com",
         "model": "gpt-oss:120b",
@@ -28,7 +26,6 @@ def _init_providers():
     }
 
     _providers["items"]["z.ai"] = {
-        "active": True,
         "engine": "openai",
         "base_url": "https://api.z.ai/api/coding/paas/v4",
         "model": "glm-5",
@@ -43,7 +40,7 @@ def _init():
 
     try:        
         # Инициализация дефолтных AI-поставщиков
-        with open(DATA_FOLDER / "providers.json", "w", encoding="utf-8") as file:
+        with open(PROVIDER_SRC, "w", encoding="utf-8") as file:
             json.dump(_init_providers(), file, indent=4, ensure_ascii=False)
 
     except Exception as e: 

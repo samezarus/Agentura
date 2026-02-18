@@ -29,9 +29,6 @@ if static_dir.exists():
     app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
 # Настройки
-# DATA_FOLDER = os.getenv("DATA_FOLDER", "~/.agentura")
-# API_PORT = os.getenv("API_PORT", 8888)
-
 MODEL_PROVIDER = os.getenv("MODEL_PROVIDER", "ollama").lower()
 OLLAMA_API_KEY = os.getenv("OLLAMA_API_KEY", "")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2")
@@ -39,11 +36,6 @@ OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o")
 OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
-SESSIONS_DIR = Path("sessions")
-
-# Создаём директорию для сессий если нет
-SESSIONS_DIR.mkdir(exist_ok=True)
-
 
 # ==================== MODEL PROVIDERS ====================
 
@@ -65,14 +57,15 @@ class ModelProvider(ABC):
 class OllamaProvider(ModelProvider):
     """Провайдер для Ollama"""
 
-    def __init__(self, api_key: str, base_url: str, model: str):
-        if api_key:
+    def __init__(self, base_url: str, model: str, headers: dict = {}):
+        if headers:
             self._client = ollama.Client(
                 host=base_url, 
-                headers={"Authorization": f"Bearer {api_key}"}
+                headers=headers
             )
         else: 
             self._client = ollama.Client(host=base_url)
+
         self._model = model
 
     @property
@@ -112,8 +105,9 @@ class OpenAICompatibleProvider(ModelProvider):
         return response.choices[0].message.content
 
 
-def get_model_provider() -> ModelProvider:
+def get_model_provider_back() -> ModelProvider:
     """Фабрика для создания провайдера на основе конфигурации"""
+    
     if MODEL_PROVIDER == "openai":
         if not OPENAI_API_KEY:
             raise ValueError("OPENAI_API_KEY is required for OpenAI provider")
@@ -128,6 +122,35 @@ def get_model_provider() -> ModelProvider:
             base_url=OLLAMA_BASE_URL,
             model=OLLAMA_MODEL,
         )
+    
+def get_model_provider() -> ModelProvider:
+    """Фабрика для создания провайдера на основе конфигурации"""
+    
+    _def_prov_name = PROVIDERS["default"]
+    _def_prov      = PROVIDERS["items"][_def_prov_name]
+    _engine        = _def_prov["engine"]
+
+    _base_url = _def_prov["base_url"]
+    _model    = _def_prov["model"]
+
+    if _engine == "openai":
+        if not OPENAI_API_KEY:
+            raise ValueError("OPENAI_API_KEY is required for OpenAI provider")
+        
+        return OpenAICompatibleProvider(
+            api_key=OPENAI_API_KEY,
+            model=OPENAI_MODEL,
+            base_url=OPENAI_BASE_URL
+        )
+    else:  # ollama по умолчанию
+        _ollama_provider = OllamaProvider(
+            base_url=_base_url,
+            model=_model,
+            headers=_def_prov["headers"]
+        )
+
+
+        return _ollama_provider
 
 
 # Создаём провайдер моделей
