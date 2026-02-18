@@ -6,8 +6,8 @@ logs/
 .ide/
 temp/
 sessions/
-.claude/
+.agentura/
 
 .env
 *.db
-run.sh
+providers.json

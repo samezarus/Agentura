@@ -27,6 +27,9 @@ if static_dir.exists():
     app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
 # Настройки
+DATA_FOLDER = os.getenv("DATA_FOLDER", "~/.agentura")
+API_PORT = os.getenv("API_PORT", 8888)
+
 MODEL_PROVIDER = os.getenv("MODEL_PROVIDER", "ollama").lower()
 OLLAMA_API_KEY = os.getenv("OLLAMA_API_KEY", "")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2")
@@ -652,12 +655,12 @@ async def get_config():
 
 
 if __name__ == "__main__":
-    import uvicorn
-
     args = sys.argv[1:]  # все переданные параметры кроме имени скрипта
 
     if "init" in args:
-        pass
+        from init import _init
+        _init()
 
     if "run" in args:
-        uvicorn.run(app, host="0.0.0.0", port=8888)
+        import uvicorn
+        uvicorn.run(app, host="0.0.0.0", port=API_PORT)
