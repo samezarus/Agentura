@@ -1,18 +1,21 @@
+from typing import List, Optional, Dict, Any
+import os
+import sys
+from datetime import datetime
+import time
+from pathlib import Path
+import subprocess
+import json
+from abc import ABC, abstractmethod
+
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, FileResponse
 from pydantic import BaseModel, Field, field_validator
-from typing import List, Optional, Dict, Any
-from abc import ABC, abstractmethod
 import ollama
 from openai import OpenAI
-import subprocess
-import json
-import os
-import time
-from datetime import datetime
-from pathlib import Path
 from dotenv import load_dotenv
+
 
 load_dotenv()
 
@@ -650,4 +653,11 @@ async def get_config():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8888)
+
+    args = sys.argv[1:]  # все переданные параметры кроме имени скрипта
+
+    if "init" in args:
+        pass
+
+    if "run" in args:
+        uvicorn.run(app, host="0.0.0.0", port=8888)

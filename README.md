@@ -27,17 +27,25 @@ cp .env.example .env
 
 ## Запуск
 
+### Инициализация
+
+```bash
+source .venv/bin/activate
+python agentura.py init
+```
+
 ### Back
 
 ```bash
 source .venv/bin/activate
-python main.py
+python agentura.py run
 ```
 
 Или через uvicorn:
+
 ```bash
 source .venv/bin/activate
-uvicorn main:app --reload --host 0.0.0.0 --port 88888
+uvicorn agentura:app --reload --host 0.0.0.0 --port 88888
 ```
 
 ### Front
