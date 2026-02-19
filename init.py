@@ -14,21 +14,21 @@ def _init_providers():
     _providers["items"]["ollama"] = {
         "engine": "ollama",
         "base_url": "http://localhost:11434",
-        "model": "gpt-oss:120b",
+        "default_model": "gpt-oss:120b",
         "headers": dict()
     }
 
     _providers["items"]["ollama_nginx"] = {
         "engine": "ollama",
         "base_url": "https://my-ollama.com",
-        "model": "gpt-oss:120b",
+        "default_model": "gpt-oss:120b",
         "headers": {"Authorization": "Bearer <key_in_nginx_rule>"}
     }
 
     _providers["items"]["z.ai"] = {
         "engine": "openai",
         "base_url": "https://api.z.ai/api/coding/paas/v4",
-        "model": "glm-5",
+        "default_model": "glm-5",
         "api_key": "..."
     }
 
