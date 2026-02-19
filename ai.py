@@ -6,12 +6,13 @@ import json
 from models import *
 from tools import *
 from models import *
+from providers import *
 
 
 async def should_use_tool(
         prompt: str, 
         tool_manager: ToolManager, 
-        model_provider
+        model_provider: ModelProvider
     ) -> tuple[bool, Optional[str], Optional[Dict[str, Any]]]:
     """AI решает - нужно ли использовать tool и какую"""
 
@@ -73,7 +74,7 @@ User: "what is Python?"
 def generate_response(
         prompt: str, 
         history: List[HistoryItem],
-        model_provider,
+        model_provider: ModelProvider,
         tool_context: Optional[str] = None
     ) -> str:
     """Генерирует ответ с помощью AI"""
