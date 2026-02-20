@@ -31,7 +31,7 @@ cp .env.example .env
 
 ```bash
 source .venv/bin/activate
-python agentura.py init
+python init.py 
 ```
 
 ### Back

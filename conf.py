@@ -23,6 +23,7 @@ try:
     PROVIDER_SRC = DATA_FOLDER / "providers.json"
     with PROVIDER_SRC.open(encoding='utf-8') as f:
         PROVIDERS = json.load(f)
+    
 except Exception as e:
     print("Ошибка при инициализации конфига (conf.py):", e)
     exit()

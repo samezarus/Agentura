@@ -74,25 +74,6 @@ class OpenAICompatibleProvider(ModelProvider):
         return response.choices[0].message.content
 
 
-# def get_model_provider_back() -> ModelProvider:
-#     """Фабрика для создания провайдера на основе конфигурации"""
-    
-#     if MODEL_PROVIDER == "openai":
-#         if not OPENAI_API_KEY:
-#             raise ValueError("OPENAI_API_KEY is required for OpenAI provider")
-#         return OpenAICompatibleProvider(
-#             api_key=OPENAI_API_KEY,
-#             model=OPENAI_MODEL,
-#             base_url=OPENAI_BASE_URL
-#         )
-#     else:  # ollama по умолчанию
-#         return OllamaProvider(
-#             api_key=OLLAMA_API_KEY,
-#             base_url=OLLAMA_BASE_URL,
-#             model=OLLAMA_MODEL,
-#         )
-
-
 def get_model_provider() -> ModelProvider:
     """Фабрика для создания провайдера на основе конфигурации"""
     

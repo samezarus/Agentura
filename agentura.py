@@ -201,10 +201,6 @@ async def get_config():
 if __name__ == "__main__":
     args = sys.argv[1:]  # все переданные параметры кроме имени скрипта
 
-    if "init" in args:
-        from init import _init
-        _init()
-
     if "run" in args:
         import uvicorn
         uvicorn.run(app, host="0.0.0.0", port=API_PORT)
